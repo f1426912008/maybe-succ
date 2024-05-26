@@ -57,15 +57,19 @@ public class ScheduleUtils {
         // 构建job信息
         Long jobId = job.getJobId();
         String jobGroup = job.getJobGroup();
-        JobDetail jobDetail = JobBuilder.newJob(jobClass).withIdentity(getJobKey(jobId, jobGroup)).build();
+        JobDetail jobDetail = JobBuilder.newJob(jobClass)
+                .withIdentity(getJobKey(jobId, jobGroup))
+                .build();
 
         // 表达式调度构建器
         CronScheduleBuilder cronScheduleBuilder = CronScheduleBuilder.cronSchedule(job.getCronExpression());
         cronScheduleBuilder = handleCronScheduleMisfirePolicy(job, cronScheduleBuilder);
 
         // 按新的cronExpression表达式构建一个新的trigger
-        CronTrigger trigger = TriggerBuilder.newTrigger().withIdentity(getTriggerKey(jobId, jobGroup))
-                .withSchedule(cronScheduleBuilder).build();
+        CronTrigger trigger = TriggerBuilder.newTrigger()
+                .withIdentity(getTriggerKey(jobId, jobGroup))
+                .withSchedule(cronScheduleBuilder)
+                .build();
 
         // 放入参数，运行时的方法可以获取
         jobDetail.getJobDataMap().put(ScheduleConstants.TASK_PROPERTIES, job);

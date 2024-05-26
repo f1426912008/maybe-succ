@@ -1,0 +1,8 @@
+# 应用名称
+spring:
+  application:
+    name: spring-security-study
+server:
+  port: 8080
+
+

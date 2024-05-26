@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export default class RedisEditMonitor {
+export default class RedisEditApi {
 
   static queryPage(data) {
     return request({

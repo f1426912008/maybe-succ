@@ -5,7 +5,6 @@
         <el-form
           ref="searchRef"
           :model="queryParam.data"
-          :rules="rules"
           inline
           style="border-bottom: 1px solid #dcdfe6"
         >
@@ -68,7 +67,7 @@
                   size="mini"
                   type="primary"
                   icon="el-icon-edit"
-                  @click="modifyOne(scope.row)"
+                  @click="updateOne(scope.row)"
                 />
               </el-tooltip>
               &emsp;
@@ -116,18 +115,11 @@
 </template>
 
 <script>
-import WindRowQuery from "@/views/components/windComponents/WindRowQuery";
-import WindRowOption from "@/views/components/windComponents/WindRowOption";
-import WindRowBottom from "@/views/components/windComponents/WindRowBottom";
-import Scaling from "@/views/components/windComponents/Scaling";
 import TableHeight from "@/api/TableHeight";
-import redisEditMonitor from "@/api/wind/redisUtil/RedisEditMonitor";
+import redisEditApi from "@/api/wind/redisUtil/RedisEditApi";
 
 export default {
   name: "redisEditMonitor",
-  components: {
-    WindRowQuery, Scaling, WindRowOption, WindRowBottom
-  },
   data() {
     const regex = /[^0-9#()（）a-zA-Z\u4E00-\u9FA5]/g
     const validateUnitName = (rule, value, callback) => {
@@ -162,7 +154,6 @@ export default {
         }
       },
       rules: {
-        // amtYm: [{required: true, message: '请选择年月', trigger: 'blur'}],
         redisKey: [{trigger: 'blur', validator: validateUnitName}]
       },
       databases: [],
@@ -196,10 +187,10 @@ export default {
     },
     query(param) {
       this.tableLoading = true
-      redisEditMonitor.queryPage(param).then(res => {
+      redisEditApi.queryPage(param).then(res => {
         if (res.code === 200) {
           this.tableData = res.data.list
-          this.queryParam.pageInfo = res.data.list.length
+          this.queryParam.pageInfo = res.data
           this.tableLoading = false
         } else {
           this.$message({type: "warning", message: res.msg, duration: 1000})
@@ -207,16 +198,18 @@ export default {
       }).catch(() => {
       }).finally(() => this.tableLoading = false)
     },
+    addOne() {
+      this.dialogVisible = true
+    },
     flushDb(database) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      this.$confirm('此操作将清空全部数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        debugger
-        redisEditMonitor.flushDb({database: database}).then(res => {
+        redisEditApi.flushDb({database: database}).then(res => {
           if (res.code === 200) {
-            this.$message({type: "success", message: "删除成功", duration: 1000})
+            this.$message({type: "success", message: "清空成功", duration: 1000})
             this.query(this.queryParam)
           } else {
             this.$message({type: "warning", message: res.msg, duration: 1000})

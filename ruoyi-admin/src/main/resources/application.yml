@@ -14,7 +14,7 @@ ruoyi:
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数组计算 char 字符验证
-  captchaType: char
+  captchaType: math
 
 # 开发环境配置
 server:
@@ -90,6 +90,19 @@ spring:
         max-active: 8
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
+  # 邮箱配置
+  mail:
+    host: smtp.163.com
+    port: 465 #465或者994
+    username: fyx_717@163.com
+    password: FHVXSJTHQOYJEZFL
+    default-encoding: UTF-8
+    properties.mail.smtp.auth: true
+    properties.mail.smtp.starttls.enable: true
+    properties.mail.smtp.starttls.required: true
+    properties.mail.smtp.socketFactory.port: 465
+    properties.mail.smtp.socketFactory.class: javax.net.ssl.SSLSocketFactory
+    properties.mail.smtp.socketFactory.fallback: false
 
 # token配置
 token:

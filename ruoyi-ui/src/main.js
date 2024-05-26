@@ -63,6 +63,17 @@ Vue.use(plugins)
 Vue.use(VueMeta)
 DictData.install()
 
+// 自定义组件
+import WindRowQuery from "@/views/components/windComponents/WindRowQuery"
+import WindRowOption from "@/views/components/windComponents/WindRowOption"
+import WindRowBottom from "@/views/components/windComponents/WindRowBottom"
+import Scaling from "@/views/components/windComponents/Scaling"
+
+Vue.component('WindRowQuery', WindRowQuery)
+Vue.component('WindRowOption', WindRowOption)
+Vue.component('WindRowBottom', WindRowBottom)
+Vue.component('Scaling', Scaling)
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
