@@ -9,4 +9,11 @@ export default class MailSendApi {
       data: data
     })
   }
+
+  static contactList() {
+    return request({
+      url: '/mailUtil/contactList',
+      method: 'get',
+    })
+  }
 }

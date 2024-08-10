@@ -1,5 +1,6 @@
 package com.ruoyi.dust.service;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.dust.bean.entity.MailDetail;
 
 public interface MailService {
@@ -26,4 +27,5 @@ public interface MailService {
      */
     void sendAttachmentsMail(MailDetail mailDetail);
 
+    AjaxResult contactList();
 }

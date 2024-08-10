@@ -16,7 +16,7 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" :disabled="searchDisabled" @click="search('queryRef')">查 询</el-button>
+            <el-button type="primary" :loading="searchDisabled" @click="search('queryRef')">查 询</el-button>
           </el-form-item>
           <el-form-item>
             <el-button @click="reset('queryRef')">重 置</el-button>
@@ -91,7 +91,8 @@
         title="写邮件"
         :visible.sync="customDialog"
         width="60%"
-        :before-close="handleClose">
+        :before-close="handleClose"
+      >
         <el-form
           ref="mailInfo"
           style="margin-left: 2%;margin-right: 2%"
@@ -107,7 +108,7 @@
               placeholder="请输入收件人"
               clearable
             />
-            <el-button style="width: 18%;margin-left: 2%" type="primary">选择收件人</el-button>
+            <el-button style="width: 18%;margin-left: 2%" type="primary" @click="selectContact">选择收件人</el-button>
           </el-form-item>
           <el-form-item label="主 题" prop="subject">
             <el-input
@@ -118,7 +119,7 @@
           </el-form-item>
           <el-form-item label="正 文" prop="content">
             <editor
-              :height="260"
+              :height="200"
               v-model="mailInfo.content"
             />
           </el-form-item>
@@ -133,9 +134,37 @@
             </el-upload>
           </el-form-item>
         </el-form>
-        <div style="text-align: center">
-          <el-button @click="customDialog = false">取 消</el-button>
+        <div slot="footer" style="text-align: center">
+          <el-button @click="handleClose">取 消</el-button>
           <el-button type="primary" @click="send">发 送</el-button>
+        </div>
+      </el-dialog>
+      <el-dialog
+        title="联系人"
+        :visible.sync="contactDialog"
+        width="50%"
+        style="margin-top: 5vh"
+      >
+        <el-table
+          :data="contactData"
+          v-loading="contactLoading"
+          highlight-current-row
+          :row-style="{height: '40px'}"
+          max-height="400"
+          height="400"
+          @selection-change="handleSelectionChange"
+        >
+          <el-table-column type="selection" align="center" width="55"/>
+          <el-table-column prop="contactName" label="名称" align="center" min-width="80"/>
+          <el-table-column prop="mailAddr" label="邮箱地址" align="center" min-width="100"/>
+          <el-table-column prop="mobilePhone" label="手机号" align="center" min-width="100"/>
+          <el-table-column prop="groupName" label="分组" align="center" min-width="80"/>
+          <el-table-column prop="remark" label="备注" align="center" min-width="150" show-overflow-tooltip/>
+          <el-table-column prop="isCollect" label="收藏" align="center" min-width="50"/>
+        </el-table>
+        <div slot="footer" style="text-align: center">
+          <el-button @click="contactDialog = false">取 消</el-button>
+          <el-button type="primary" @click="submitSelect">确 定</el-button>
         </div>
       </el-dialog>
     </el-main>
@@ -169,8 +198,12 @@ export default {
       document: document,
       tableHeight: null,
       customDialog: false,
+      contactDialog: false,
       tableLoading: false,
+      contactLoading: false,
       searchDisabled: false,
+      multipleSelection: [],
+      contactData: [],
       tableData: [
         {
           tempName: '测试',
@@ -215,6 +248,7 @@ export default {
           this.queryParam.pageInfo.pageNum = 1
           await this.query(this.queryParam)
           this.searchDisabled = false
+          this.tableLoading = false
           this.$message({type: "success", message: '查询成功', duration: 1000})
         } else {
           return false
@@ -232,7 +266,6 @@ export default {
     },
     reset(formName) {
       this.$refs[formName].resetFields()
-      this.tableLoading = false
     },
     handleCurrentChange(val) {
       this.queryParam.pageInfo.pageNum = val
@@ -254,6 +287,7 @@ export default {
       this.customDialog = true
     },
     handleClose() {
+      this.reset('mailInfo')
       this.customDialog = false
     },
     send() {
@@ -265,11 +299,26 @@ export default {
               this.$message({type: "success", message: res.msg, duration: 2000})
             }
           }).catch()
-          this.customDialog = false
+          this.handleClose()
         } else {
           return false
         }
       })
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val.map(item => item.mailAddr)
+    },
+    submitSelect() {
+      this.contactDialog = false
+      this.mailInfo.sendTo = this.multipleSelection.join(";")
+    },
+    selectContact() {
+      this.contactDialog = true
+      mailSendApi.contactList().then(res => {
+        if (res.code === 200) {
+          this.contactData = res.data
+        }
+      }).catch()
     },
   }
 }

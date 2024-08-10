@@ -1,6 +1,11 @@
 package com.ruoyi.dust.service.impl;
 
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.dust.bean.entity.MailDetail;
+import com.ruoyi.dust.bean.po.MbMailContact;
+import com.ruoyi.dust.mapper.MbMailContactMapper;
 import com.ruoyi.dust.service.MailService;
 import com.ruoyi.dust.utils.MultipartFileToFile;
 import io.swagger.annotations.Api;
@@ -17,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -33,6 +39,8 @@ public class MailServiceImpl implements MailService {
      */
     @Autowired
     private JavaMailSender javaMailSender;
+    @Autowired
+    private MbMailContactMapper mbMailContactMapper;
 
     /**
      * 简单文本邮件
@@ -116,6 +124,14 @@ public class MailServiceImpl implements MailService {
         } finally {
             MultipartFileToFile.deleteTempFile(fileToFile);
         }
+    }
+
+    @Override
+    public AjaxResult contactList() {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        Long userId = loginUser.getUserId();
+        List<MbMailContact> list = mbMailContactMapper.selectByUserId(userId);
+        return AjaxResult.success(list);
     }
 
 }

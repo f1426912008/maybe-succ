@@ -38,7 +38,7 @@ server:
 logging:
   level:
     com.ruoyi: debug
-    org.springframework: warn
+#    org.springframework: warn
 
 # 用户配置
 user:
@@ -71,13 +71,13 @@ spring:
   # redis 配置
   redis:
     # 地址
-    host: localhost
+    host: 8.147.232.107
     # 端口，默认为6379
-    port: 6379
+    port: 13684
     # 数据库索引
     database: 0
     # 密码
-    password:
+    password: 123asd
     # 连接超时时间
     timeout: 10s
     lettuce:
